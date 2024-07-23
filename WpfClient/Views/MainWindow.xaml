@@ -1,0 +1,79 @@
+﻿<Window x:Class="WpfClient.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Title="PhoneNotes" 
+        Height="450" 
+        Width="800"
+        ResizeMode="NoResize"
+>
+    <Grid>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+        </Grid.RowDefinitions>
+        
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+        
+        
+        <StackPanel
+            Grid.Row="0"
+            Grid.Column="0"
+            Orientation="Horizontal"
+        >
+            
+            <Button 
+                Content="List"
+                Margin="5"
+                Padding="8 4"
+                Command="{Binding ShowListCommand}"
+            />
+            
+            <Button 
+                Content="Add"
+                Margin="5"
+                Padding="8 4"
+                Command="{Binding AddNewCommand}"
+            />
+            
+        </StackPanel>
+        
+        <StackPanel
+            Grid.Row="0"
+            Grid.Column="2"
+            Orientation="Horizontal"
+        >
+            
+            <Button 
+                Content="Signin"
+                Margin="5"
+                Padding="8 4"
+                Command="{Binding SigninCommand}"
+            />
+            
+            <Button 
+                Content="Sing out"
+                Margin="5"
+                Padding="8 4"
+                Command="{Binding SignOutCommand}"
+            />
+            
+        </StackPanel>
+            
+        <Frame
+            Grid.Row="1"
+            Grid.Column="0"
+            Grid.ColumnSpan="3"
+            NavigationUIVisibility="Hidden"
+            Content="{Binding Path=NavigationService.CurrentView}" 
+        />
+
+    </Grid>
+</Window>

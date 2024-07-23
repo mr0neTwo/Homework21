@@ -1,0 +1,137 @@
+﻿<Page x:Class="WpfClient.Views.NoteFormPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      mc:Ignorable="d"
+      Title="NoteFormPage" 
+      Height="400" 
+      Width="700"
+>
+    <Grid>
+        
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        
+        <TextBlock 
+            Grid.Row="0"
+            Grid.Column="0"
+            Margin="5"
+            Text="FirstName"
+        />
+        
+        <TextBox 
+            Grid.Row="0"
+            Grid.Column="1"
+            Margin="5"
+            Text="{Binding Path=Note.FirstName}"
+        />
+        
+        <TextBlock 
+            Grid.Row="1"
+            Grid.Column="0"
+            Margin="5"
+            Text="SecondName"
+        />
+        
+        <TextBox 
+            Grid.Row="1"
+            Grid.Column="1"
+            Margin="5"
+            Text="{Binding Path=Note.SecondName}"
+        />
+        
+        <TextBlock 
+            Grid.Row="2"
+            Grid.Column="0"
+            Margin="5"
+            Text="ThirdName"
+        />
+        
+        <TextBox 
+            Grid.Row="2"
+            Grid.Column="1"
+            Margin="5"
+            Text="{Binding Path=Note.ThirdName}"
+        />
+        
+        <TextBlock 
+            Grid.Row="3"
+            Grid.Column="0"
+            Margin="5"
+            Text="PhoneNumber"
+        />
+        
+        <TextBox 
+            Grid.Row="3"
+            Grid.Column="1"
+            Margin="5"
+            Text="{Binding Path=Note.PhoneNumber}"
+        />
+        
+        <TextBlock 
+            Grid.Row="4"
+            Grid.Column="0"
+            Margin="5"
+            Text="Address"
+        />
+        
+        <TextBox 
+            Grid.Row="4"
+            Grid.Column="1"
+            Margin="5"
+            Text="{Binding Path=Note.Address}"
+        />
+        
+        <TextBlock 
+            Grid.Row="5"
+            Grid.Column="0"
+            Margin="5"
+            Text="Description"
+        />
+        
+        <TextBox 
+            Grid.Row="5"
+            Grid.Column="1"
+            Margin="5"
+            Text="{Binding Path=Note.Description}"
+        />
+        
+        <StackPanel 
+            Grid.Row="6"
+            Grid.Column="0"
+            Grid.ColumnSpan="2"
+            Orientation="Horizontal"
+        >
+            
+            <Button 
+                Margin="5"
+                Padding="8 4"
+                Content="Save"
+                Command="{Binding Path=SaveCommand}"
+            />
+            
+            <Button 
+                Margin="5"
+                Padding="8 4"
+                Content="Back"
+                Command="{Binding Path=BackCommand}"
+            />
+            
+        </StackPanel>
+        
+    </Grid>
+</Page>

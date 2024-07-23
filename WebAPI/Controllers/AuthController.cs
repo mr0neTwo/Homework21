@@ -1,24 +1,41 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Application.Models;
+using Database;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using WebAPI.Data;
 using WebAPI.Models;
 
 namespace WebAPI.Controllers;
 
 [ApiController]
 [Route("auth/")]
-public sealed class AuthController(IConfiguration configuration) : Controller
+public sealed class AuthController(IConfiguration configuration, DatabaseContext context) : Controller
 {
-	private IConfiguration _configuration = configuration;
+	private readonly IConfiguration _configuration = configuration;
+	private readonly DatabaseContext _context = context;
 
 	[HttpPost("login")]
 	public async Task<IActionResult> Login([FromBody] UserLoginModel userLoginModel)
 	{
-		await Task.Delay(100);
-		LoginResponse loginResponse = new() { Token = GenerateToken(userLoginModel.UserName) };
+		User? user = await _context.Users
+								   .Include(user => user.Role)
+								   .FirstOrDefaultAsync(user => user.UserName == userLoginModel.UserName);
+
+		if (user == null)
+		{
+			LoginResponse badResponse = new() { ErrorMessage = "Incorrect UserName or Password" };
+			
+			return BadRequest(badResponse);
+		}
+
+		LoginResponse loginResponse = new()
+		{
+			Token = GenerateToken(userLoginModel.UserName),
+			User = user
+		};
 
 		return Ok(loginResponse);
 	}
