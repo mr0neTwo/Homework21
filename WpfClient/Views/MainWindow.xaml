@@ -30,17 +30,31 @@
         >
             
             <Button 
-                Content="List"
+                Content="Notes"
                 Margin="5"
                 Padding="8 4"
-                Command="{Binding ShowListCommand}"
+                Command="{Binding ShowNotesCommand}"
             />
             
             <Button 
-                Content="Add"
+                Content="Create note"
                 Margin="5"
                 Padding="8 4"
-                Command="{Binding AddNewCommand}"
+                Command="{Binding CreateNewNoteCommand}"
+            />
+            
+            <Button 
+                Content="Users"
+                Margin="5"
+                Padding="8 4"
+                Command="{Binding ShowUsersCommand}"
+            />
+            
+            <Button 
+                Content="Create user"
+                Margin="5"
+                Padding="8 4"
+                Command="{Binding CreateNewUserCommand}"
             />
             
         </StackPanel>
@@ -59,10 +73,10 @@
             />
             
             <Button 
-                Content="Sing out"
+                Content="Sing Up"
                 Margin="5"
                 Padding="8 4"
-                Command="{Binding SignOutCommand}"
+                Command="{Binding SignUpCommand}"
             />
             
         </StackPanel>

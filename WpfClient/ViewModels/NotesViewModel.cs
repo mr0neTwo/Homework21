@@ -1,24 +1,27 @@
 ﻿using System.Collections.ObjectModel;
 using Application.Models;
 using WpfClient.Services;
+using WpfClient.Services.Auth;
 using WpfClient.Services.DataProvider;
 
 namespace WpfClient.ViewModels;
 
-public sealed class ListViewModel : ViewModel
+public sealed class NotesViewModel : ViewModel
 {
 	public ObservableCollection<Note> Notes { get; set; }
 
-	public DelegateCommand EditCommand => new(Edit);
-	public DelegateCommand DeleteCommand => new(Delete);
+	public DelegateCommand EditCommand => new(Edit, obj => _authService.HasPermission(Permission.CanEditNote));
+	public DelegateCommand DeleteCommand => new(Delete, obj => _authService.HasPermission(Permission.CanDeleteNote));
 
 	private readonly IDataProvider _dataProvider;
 	private readonly NoteFormViewModel _noteFormViewModel;
 	private readonly INavigationService _navigationService;
+	private IAuthService _authService;
 
 
-	public ListViewModel(IDataProvider dataProvider, NoteFormViewModel noteFormViewModel, INavigationService navigationService)
+	public NotesViewModel(IDataProvider dataProvider, NoteFormViewModel noteFormViewModel, INavigationService navigationService, IAuthService authService)
 	{
+		_authService = authService;
 		_dataProvider = dataProvider;
 		_noteFormViewModel = noteFormViewModel;
 		_navigationService = navigationService;

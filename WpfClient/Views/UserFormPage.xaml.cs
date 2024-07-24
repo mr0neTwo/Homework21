@@ -2,9 +2,9 @@
 
 namespace WpfClient.Views;
 
-public sealed partial class ListPage : Page
+public partial class UserFormPage : Page
 {
-	public ListPage()
+	public UserFormPage()
 	{
 		InitializeComponent();
 	}

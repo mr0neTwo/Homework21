@@ -30,9 +30,15 @@ public partial class App : System.Windows.Application
 		);
 		
 		services.AddSingleton<MainViewModel>();
-		services.AddSingleton<ListViewModel>();
+		
+		services.AddSingleton<NotesViewModel>();
 		services.AddSingleton<NoteFormViewModel>();
+		
 		services.AddSingleton<LoginViewModel>();
+		services.AddSingleton<SignUpViewModel>();
+		
+		services.AddSingleton<UsersViewModel>();
+		services.AddSingleton<UserFormViewModel>();
 
 		services.AddSingleton<INavigationService, NavigationService>();
 		services.AddSingleton<IAuthService, AuthService>();

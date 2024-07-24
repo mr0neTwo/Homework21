@@ -3,6 +3,7 @@ using System.Security.Claims;
 using System.Text;
 using Application.Models;
 using Database;
+using Database.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -12,37 +13,69 @@ namespace WebAPI.Controllers;
 
 [ApiController]
 [Route("auth/")]
-public sealed class AuthController(IConfiguration configuration, DatabaseContext context) : Controller
+public sealed class AuthController(IConfiguration configuration, DatabaseContext database) : Controller
 {
-	private readonly IConfiguration _configuration = configuration;
-	private readonly DatabaseContext _context = context;
-
 	[HttpPost("login")]
 	public async Task<IActionResult> Login([FromBody] UserLoginModel userLoginModel)
 	{
-		User? user = await _context.Users
+		User? user = await database.Users
 								   .Include(user => user.Role)
 								   .FirstOrDefaultAsync(user => user.UserName == userLoginModel.UserName);
 
-		if (user == null)
+		if (user == null || !BCrypt.Net.BCrypt.Verify(userLoginModel.Password, user.PasswordHash))
 		{
-			LoginResponse badResponse = new() { ErrorMessage = "Incorrect UserName or Password" };
+			AuthResponse badResponse = new() { ErrorMessage = "Incorrect UserName or Password" };
 			
 			return BadRequest(badResponse);
 		}
 
-		LoginResponse loginResponse = new()
+		AuthResponse authResponse = new()
 		{
 			Token = GenerateToken(userLoginModel.UserName),
 			User = user
 		};
 
-		return Ok(loginResponse);
+		return Ok(authResponse);
+	}
+	
+	[HttpPost("register")]
+	public async Task<IActionResult> Register([FromBody] UserRegisterModel userRegisterModel)
+	{
+		User? user = await database.Users.FirstOrDefaultAsync(user => user.UserName == userRegisterModel.UserName);
+
+		if (user != null)
+		{
+			AuthResponse badResponse = new() { ErrorMessage = "User with that name has already been registered" };
+			
+			return BadRequest(badResponse);
+		}
+
+		Role userRole = await database.Roles.FirstOrDefaultAsync(role => role.Name == DefaultValues.UserRole.Name);
+
+		User newUser = new()
+		{
+			UserName = userRegisterModel.UserName,
+			Email = userRegisterModel.Email,
+			PhoneNumber = userRegisterModel.PhoneNumber,
+			PasswordHash = BCrypt.Net.BCrypt.HashPassword(userRegisterModel.Password),
+			RoleId = userRole.Id
+		};
+
+		await database.Users.AddAsync(newUser);
+		await database.SaveChangesAsync();
+
+		AuthResponse authResponse = new()
+		{
+			Token = GenerateToken(userRegisterModel.UserName),
+			User = newUser
+		};
+
+		return Ok(authResponse);
 	}
 	
 	private string GenerateToken(string userName)
 	{
-		SymmetricSecurityKey securityKey = new(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]!));
+		SymmetricSecurityKey securityKey = new(Encoding.UTF8.GetBytes(configuration["Jwt:Key"]!));
 		SigningCredentials credentials = new(securityKey, SecurityAlgorithms.HmacSha256);
 
 		Claim[] claims =
@@ -53,8 +86,8 @@ public sealed class AuthController(IConfiguration configuration, DatabaseContext
 
 		JwtSecurityToken token = new
 		(
-			issuer : _configuration["Jwt:Issuer"],
-			audience : _configuration["Jwt:Audience"],
+			issuer : configuration["Jwt:Issuer"],
+			audience : configuration["Jwt:Audience"],
 			claims : claims, 
 			expires : DateTime.UtcNow.AddHours(48),
 			signingCredentials : credentials

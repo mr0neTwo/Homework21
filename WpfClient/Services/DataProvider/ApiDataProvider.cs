@@ -66,4 +66,47 @@ public sealed class ApiDataProvider : IDataProvider
 		var content = new StringContent(json, Encoding.UTF8, "application/json");
 		await _client.PostAsync("delete", content);
 	}
+
+	public async Task<List<User>> GetAllUsers()
+	{
+		_client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(JwtBearerDefaults.AuthenticationScheme, _authService.Token);
+		HttpResponseMessage response = await _client.GetAsync("user/list");
+
+		if (response.IsSuccessStatusCode == false)
+		{
+			return new List<User>();
+		}
+		
+		string json = await response.Content.ReadAsStringAsync();
+		List<User>? users = JsonConvert.DeserializeObject<List<User>>(json);
+
+		if (users == null)
+		{
+			return new List<User>();
+		}
+		
+		return users;
+	}
+
+	public async Task AddUser(User user)
+	{
+		_client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(JwtBearerDefaults.AuthenticationScheme, _authService.Token);
+		string json = JsonConvert.SerializeObject(user);
+		var content = new StringContent(json, Encoding.Default, "application/json");
+		await _client.PostAsync("user/add", content);
+	}
+
+	public async Task EditUser(User user)
+	{
+		string json = JsonConvert.SerializeObject(user);
+		var content = new StringContent(json, Encoding.UTF8, "application/json");
+		await _client.PostAsync("user/edit", content);
+	}
+
+	public async Task DeleteUser(User user)
+	{
+		string json = JsonConvert.SerializeObject(user);
+		var content = new StringContent(json, Encoding.UTF8, "application/json");
+		await _client.PostAsync("user/delete", content);
+	}
 }

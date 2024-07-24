@@ -1,53 +1,82 @@
+using Application.Models;
 using WpfClient.Services;
+using WpfClient.Services.Auth;
 
 namespace WpfClient.ViewModels;
 
-public sealed class MainViewModel : ViewModel
+public sealed class MainViewModel(
+	INavigationService navigationService,
+	NoteFormViewModel noteFormViewModel,
+	UserFormViewModel userFormViewModel,
+	IAuthService authService) : ViewModel
 {
 	public INavigationService NavigationService 
 	{ 
-		get => _navigationService;
+		get => navigationService;
 		set 
 		{
-			_navigationService = value;
+			navigationService = value;
 			OnPropertyChanged();
 		}
 	}
-
-
+	
 	public DelegateCommand SigninCommand => new(Signin);
-	public DelegateCommand SignOutCommand => new(Signout);
-	public DelegateCommand ShowListCommand => new(ShowList);
-	public DelegateCommand AddNewCommand => new(AddNew);
-
-	private INavigationService _navigationService;
-	private NoteFormViewModel _noteFormViewModel;
-
-	public MainViewModel(INavigationService navigationService, NoteFormViewModel noteFormViewModel)
-	{
-		_noteFormViewModel = noteFormViewModel;
-		NavigationService = navigationService;
-	}
-
+	public DelegateCommand SignUpCommand => new(SignUp);
+	public DelegateCommand ShowNotesCommand => new(ShowNotes, CanSeeNotes);
+	public DelegateCommand CreateNewNoteCommand => new(CreateNewNote, CanCreateNotes);
+	public DelegateCommand ShowUsersCommand => new(ShowUsers, CanSeeUsers);
+	public DelegateCommand CreateNewUserCommand => new(CreateNewUser, CanCreateUser);
+	
 
 	private void Signin(object obj)
 	{
-		_navigationService.NavigateTo<LoginViewModel>();
+		navigationService.NavigateTo<LoginViewModel>();
 	}
 
-	private void Signout(object obj)
+	private void SignUp(object obj)
 	{
-		Console.WriteLine("Sign out");
+		navigationService.NavigateTo<SignUpViewModel>();
 	}
 
-	private void ShowList(object obj)
+	private void ShowNotes(object obj)
 	{
-		_navigationService.NavigateTo<ListViewModel>();
+		navigationService.NavigateTo<NotesViewModel>();
 	}
 
-	private void AddNew(object obj)
+	private bool CanSeeNotes(object obj)
 	{
-		_noteFormViewModel.EditMode = false;
-		_navigationService.NavigateTo<NoteFormViewModel>();
+		return authService.HasPermission(Permission.CanSeeNotes);
+	}
+
+	private void CreateNewNote(object obj)
+	{
+		noteFormViewModel.EditMode = false;
+		navigationService.NavigateTo<NoteFormViewModel>();
+	}
+	
+	private bool CanCreateNotes(object obj)
+	{
+		return authService.HasPermission(Permission.CanCreateNewNote);
+	}
+
+	private void ShowUsers(object obj)
+	{
+		navigationService.NavigateTo<UsersViewModel>();
+	}
+
+	private bool CanSeeUsers(object obj)
+	{
+		return authService.HasPermission(Permission.CanSeeUsers);
+	}
+	
+	private void CreateNewUser(object obj)
+	{
+		userFormViewModel.EditMode = false;
+		navigationService.NavigateTo<UserFormViewModel>();
+	}
+
+	private bool CanCreateUser(object obj)
+	{
+		return authService.HasPermission(Permission.CanCreateNewUser);
 	}
 }

@@ -53,12 +53,12 @@ public sealed class NoteFormViewModel : ViewModel
 			await _dataProvider.AddNote(Note);
 		}
 		
-		_navigationService.NavigateTo<ListViewModel>();
+		_navigationService.NavigateTo<NotesViewModel>();
 	}
 	
 	private void Back()
 	{
 		Note = new Note();
-		_navigationService.NavigateTo<ListViewModel>();
+		_navigationService.NavigateTo<NotesViewModel>();
 	}
 }

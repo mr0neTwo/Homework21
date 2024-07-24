@@ -228,7 +228,7 @@ public class DefaultValues
 	
 	public static Role UserRole = new()
 	{
-		Name = "Admin", 
+		Name = "User", 
 		Permissions = new []
 		{
 			Permission.CanSeeNotes,

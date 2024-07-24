@@ -2,7 +2,7 @@
 
 namespace WebAPI.Models;
 
-public sealed class LoginResponse
+public sealed class AuthResponse
 {
 	public User User { get; set; }
 	public string Token { get; set; }

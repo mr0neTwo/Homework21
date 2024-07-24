@@ -10,7 +10,6 @@ public sealed class AuthService : IAuthService
 {
 	public User? User { get; private set; }
 	public string? Token { get; private set; }
-	public bool IsAuthorized { get; private set; }
 	
 	private readonly HttpClient _client;
 
@@ -22,45 +21,83 @@ public sealed class AuthService : IAuthService
 		_client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
 	}
 	
-	public async Task<bool> LoginAsync(string username, string password)
+	public async Task<AuthResult> LoginAsync(UserLoginModel userLoginModel)
 	{
-		UserLoginModel loginModel = new()
-		{
-			UserName = username,
-			Password = password
-		};
-
-		var content = new StringContent(JsonConvert.SerializeObject(loginModel), Encoding.UTF8, "application/json");
-		var response = await _client.PostAsync("auth/login", content);
+		StringContent content = new(JsonConvert.SerializeObject(userLoginModel), Encoding.UTF8, "application/json");
+		HttpResponseMessage response = await _client.PostAsync("auth/login", content);
+		
+		string responseContent = await response.Content.ReadAsStringAsync();
+		AuthResponse? loginResponse = JsonConvert.DeserializeObject<AuthResponse>(responseContent);
 
 		if (!response.IsSuccessStatusCode)
 		{
 			User = null;
-			IsAuthorized = false;
 			
-			return false;
+			return new AuthResult()
+			{
+				Success = false,
+				ErrorMessage = loginResponse?.ErrorMessage ?? "Bad request"
+			};
 		}
 
-		var responseContent = await response.Content.ReadAsStringAsync();
-		LoginResponse? loginResponse = JsonConvert.DeserializeObject<LoginResponse>(responseContent);
-
-		if (loginResponse == null)
+		if (loginResponse.User == null)
 		{
-			User = null;
-			IsAuthorized = false;
-			
-			return false;
+			return new AuthResult()
+			{
+				Success = false,
+				ErrorMessage = loginResponse.ErrorMessage
+			};
 		}
 		
-		IsAuthorized = true;
+		
 		Token = loginResponse.Token;
 		User = loginResponse.User;
 		
-		return true;
+		return new AuthResult()
+		{
+			Success = true
+		};
 	}
 	
-	public async Task Register(string username, string password, string confirmPassword)
+	public async Task<AuthResult> RegisterAsync(UserRegisterModel userRegisterModel)
 	{
-		await Task.Delay(1000);
+		StringContent content = new(JsonConvert.SerializeObject(userRegisterModel), Encoding.UTF8, "application/json");
+		HttpResponseMessage response = await _client.PostAsync("auth/register", content);
+		
+		string responseContent = await response.Content.ReadAsStringAsync();
+		AuthResponse? loginResponse = JsonConvert.DeserializeObject<AuthResponse>(responseContent);
+
+		if (!response.IsSuccessStatusCode)
+		{
+			User = null;
+			
+			return new AuthResult()
+			{
+				Success = false,
+				ErrorMessage = loginResponse?.ErrorMessage ?? "Bad request"
+			};
+		}
+		
+		if (loginResponse.User == null)
+		{
+			return new AuthResult()
+			{
+				Success = false,
+				ErrorMessage = loginResponse.ErrorMessage
+			};
+		}
+		
+		Token = loginResponse.Token;
+		User = loginResponse.User;
+		
+		return new AuthResult()
+		{
+			Success = true
+		};
+	}
+
+	public bool HasPermission(Permission permission)
+	{
+		return User?.Role.Permissions.Contains(permission) ?? false;
 	}
 }

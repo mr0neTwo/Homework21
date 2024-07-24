@@ -1,9 +1,10 @@
+using WebAPI.Models;
 using WpfClient.Services;
 using WpfClient.Services.Auth;
 
 namespace WpfClient.ViewModels;
 
-public sealed class LoginViewModel : ViewModel
+public sealed class LoginViewModel(IAuthService authService, INavigationService navigationService) : ViewModel
 {
 	public string UserName
 	{
@@ -24,28 +25,47 @@ public sealed class LoginViewModel : ViewModel
 			OnPropertyChanged();
 		}
 	}
+	
+	public string Error
+	{
+		get => _error;
+		set
+		{
+			_error = value;
+			OnPropertyChanged();
+		}
+	}
 
 	public DelegateCommand LoginCommand => new(Login);
 
-	private string _userName;
-	private string _password;
-	
-	private INavigationService _navigationService;
-	private readonly IAuthService _authService;
-
-	public LoginViewModel(IAuthService authService, INavigationService navigationService)
-	{
-		_navigationService = navigationService;
-		_authService = authService;
-	}
+	private string _userName = string.Empty;
+	private string _password = string.Empty;
+	private string _error = string.Empty;
 
 	private async void Login(object obj)
 	{
-		bool isLogin = await _authService.LoginAsync(UserName, Password);
-
-		if (isLogin)
+		UserLoginModel loginModel = new()
 		{
-			_navigationService.NavigateTo<ListViewModel>();
+			UserName = UserName,
+			Password = Password
+		};
+		
+		AuthResult result = await authService.LoginAsync(loginModel);
+
+		if (result.Success)
+		{
+			navigationService.NavigateTo<NotesViewModel>();
+			ResetForms();
+			
+			return;
 		}
+		
+		Error = result.ErrorMessage;
+	}
+
+	private void ResetForms()
+	{
+		UserName = string.Empty;
+		Password = string.Empty;
 	}
 }

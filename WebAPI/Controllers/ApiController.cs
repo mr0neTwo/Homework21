@@ -10,17 +10,7 @@ namespace WebAPI.Controllers;
 [Route("api/")]
 public sealed class ApiController(DatabaseContext database) : Controller
 {
-	[Route("protected")]
-	[Authorize]
-	public IActionResult Protected()
-	{
-		string protectedData = "protected data";
-		
-		return Ok(protectedData);
-	}
-	
-	[HttpGet("list")]
-	[Authorize]
+	[Authorize, HttpGet("list")]
 	public async Task<ActionResult<List<Note>>> GetAllNotes()
 	{
 		List<Note> listAsync = await database.Notes.ToListAsync();
@@ -28,8 +18,7 @@ public sealed class ApiController(DatabaseContext database) : Controller
 		return new JsonResult(listAsync);
 	}
 	
-	[HttpPost("add")]
-	[Authorize]
+	[Authorize, HttpPost("add")]
 	public async Task<ActionResult<int>> Add([FromBody] Note viewModel)
 	{
 		await database.Notes.AddAsync(viewModel);
@@ -38,8 +27,7 @@ public sealed class ApiController(DatabaseContext database) : Controller
 		return new JsonResult(viewModel.Id);
 	}
 
-	[Authorize]
-	[HttpPost("edit")]
+	[Authorize, HttpPost("edit")]
 	public async Task<IActionResult> Edit([FromBody] Note viewModel)
 	{
 		Note? note = await database.Notes.FindAsync(viewModel.Id);
@@ -60,8 +48,7 @@ public sealed class ApiController(DatabaseContext database) : Controller
 	}
 	
 
-	[Authorize]
-	[HttpPost("delete")]
+	[Authorize, HttpPost("delete")]
 	public async Task<IActionResult> Delete([FromBody] Note viewModel)
 	{
 		Note? note = await database.Notes.AsNoTracking().FirstOrDefaultAsync(note => note.Id == viewModel.Id);

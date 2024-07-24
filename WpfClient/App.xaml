@@ -6,8 +6,8 @@
             >
     <Application.Resources>
         
-        <DataTemplate DataType="{x:Type TypeName=viewModel:ListViewModel }">
-            <view:ListPage/>
+        <DataTemplate DataType="{x:Type TypeName=viewModel:NotesViewModel }">
+            <view:NotesPage/>
         </DataTemplate>
         
         <DataTemplate DataType="{x:Type TypeName=viewModel:NoteFormViewModel }">
@@ -16,6 +16,18 @@
         
         <DataTemplate DataType="{x:Type TypeName=viewModel:LoginViewModel }">
             <view:LoginPage/>
+        </DataTemplate>
+        
+        <DataTemplate DataType="{x:Type TypeName=viewModel:SignUpViewModel }">
+            <view:SignUpPage/>
+        </DataTemplate>
+        
+        <DataTemplate DataType="{x:Type TypeName=viewModel:UsersViewModel }">
+            <view:UsersPage/>
+        </DataTemplate>
+        
+        <DataTemplate DataType="{x:Type TypeName=viewModel:UserFormViewModel }">
+            <view:UserFormPage/>
         </DataTemplate>
         
     </Application.Resources>
