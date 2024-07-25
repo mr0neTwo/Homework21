@@ -1,4 +1,5 @@
 using Application.Models;
+using WebAPI.Models;
 
 namespace WpfClient.Services.DataProvider;
 
@@ -14,9 +15,11 @@ public interface IDataProvider
 
 	public Task<List<User>> GetAllUsers();
 	
-	public Task AddUser(User user);
+	public Task AddUser(UserDto user);
 	
-	public Task EditUser(User user);
+	public Task EditUser(UserDto user);
 	
-	public Task DeleteUser(User user);
+	public Task DeleteUser(UserDto user);
+
+	public Task<List<Role>> GetAllRoles();
 }

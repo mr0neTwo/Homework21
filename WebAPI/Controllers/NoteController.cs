@@ -7,8 +7,8 @@ using Microsoft.EntityFrameworkCore;
 namespace WebAPI.Controllers;
 
 [ApiController]
-[Route("api/")]
-public sealed class ApiController(DatabaseContext database) : Controller
+[Route("api/note/")]
+public sealed class NoteController(DatabaseContext database) : Controller
 {
 	[Authorize, HttpGet("list")]
 	public async Task<ActionResult<List<Note>>> GetAllNotes()

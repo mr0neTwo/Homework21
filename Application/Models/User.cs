@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace Application.Models;
 
 public sealed class User

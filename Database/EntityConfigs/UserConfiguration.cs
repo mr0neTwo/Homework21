@@ -10,13 +10,14 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
 	{
 		builder.HasKey(user => user.Id);
 		builder.Property(user => user.UserName).HasMaxLength(20).IsRequired();
-		builder.Property(user => user.Email).HasMaxLength(20).IsRequired(false);
+		builder.Property(user => user.Email).HasMaxLength(30).IsRequired(false);
 		builder.Property(user => user.PhoneNumber).HasMaxLength(20).IsRequired(false);
 		builder.Property(user => user.PasswordHash).IsRequired();
 		builder.Property(user => user.RoleId).IsRequired();
 
 		builder.HasOne(user => user.Role)
-			   .WithMany()
-			   .HasForeignKey(user => user.RoleId);
+			   .WithMany(role => role.Users)
+			   .HasForeignKey(user => user.RoleId)
+			   .OnDelete(DeleteBehavior.Cascade);
 	}
 }

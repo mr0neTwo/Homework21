@@ -1,32 +1,23 @@
 ﻿using System.Collections.ObjectModel;
 using Application.Models;
+using WebAPI.Models;
 using WpfClient.Services;
 using WpfClient.Services.Auth;
 using WpfClient.Services.DataProvider;
 
 namespace WpfClient.ViewModels;
 
-public sealed class UsersViewModel : ViewModel
+public sealed class UsersViewModel(
+	IDataProvider dataProvider,
+	UserFormViewModel userFormViewModel,
+	INavigationService navigationService,
+	IAuthService authService) : ViewModel
 {
 	public ObservableCollection<User> Users { get; set; }
 
 	public DelegateCommand EditCommand => new(Edit, CanEdit);
 	public DelegateCommand DeleteCommand => new(Delete, CanDelete);
 
-	private readonly IDataProvider _dataProvider;
-	private readonly UserFormViewModel _userFormViewModel;
-	private readonly INavigationService _navigationService;
-	private IAuthService _authService;
-
-
-	public UsersViewModel(IDataProvider dataProvider, UserFormViewModel userFormViewModel, INavigationService navigationService, IAuthService authService)
-	{
-		_authService = authService;
-		_dataProvider = dataProvider;
-		_userFormViewModel = userFormViewModel;
-		_navigationService = navigationService;
-		LoadUsers();
-	}
 
 	protected override void OnBeforeShown()
 	{
@@ -35,7 +26,7 @@ public sealed class UsersViewModel : ViewModel
 
 	private async void LoadUsers()
 	{
-		List<User> users = await _dataProvider.GetAllUsers();
+		List<User> users = await dataProvider.GetAllUsers();
 		Users = new(users);
 		OnPropertyChanged(nameof(Users));
 	}
@@ -47,14 +38,14 @@ public sealed class UsersViewModel : ViewModel
 			return;
 		}
 
-		_userFormViewModel.EditMode = true;
-		_userFormViewModel.User = user;
-		_navigationService.NavigateTo<NoteFormViewModel>();
+		userFormViewModel.EditMode = true;
+		userFormViewModel.User = user;
+		navigationService.NavigateTo<UserFormViewModel>();
 	}
 
 	private bool CanEdit(object obj)
 	{
-		return _authService.HasPermission(Permission.CanEditUser);
+		return authService.HasPermission(Permission.CanEditUser);
 	}
 
 	private async void Delete(object obj)
@@ -63,13 +54,15 @@ public sealed class UsersViewModel : ViewModel
 		{
 			return;
 		}
+
+		UserDto userDto = new() { Id = user.Id };
 		
-		await _dataProvider.DeleteUser(user);
+		await dataProvider.DeleteUser(userDto); 
 		LoadUsers();
 	}
 
 	private bool CanDelete(object obj)
 	{
-		return _authService.HasPermission(Permission.CanDeleteUser);
+		return authService.HasPermission(Permission.CanDeleteUser);
 	}
 }

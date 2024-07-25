@@ -5,12 +5,13 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       mc:Ignorable="d"
       Title="UserFormPage" 
-      Height="450" 
-      Width="800"
+      Height="400" 
+      Width="700"
 >
     <Grid>
         
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
@@ -70,18 +71,34 @@
             Grid.Row="3"
             Grid.Column="0"
             Margin="5"
-            Text="Role"
+            Text="Password"
         />
         
         <TextBox 
             Grid.Row="3"
             Grid.Column="1"
             Margin="5"
-            Text=""
+            Text="{Binding Path=User.PasswordHash}"
+        />
+        
+        <TextBlock 
+            Grid.Row="4"
+            Grid.Column="0"
+            Margin="5"
+            Text="Role"
+        />
+        
+        <ComboBox 
+            Grid.Row="4"
+            Grid.Column="1"
+            Margin="5"
+            ItemsSource="{Binding Roles}"
+            DisplayMemberPath="Name"
+            SelectedItem="{Binding User.Role}"
         />
         
         <StackPanel 
-            Grid.Row="4"
+            Grid.Row="5"
             Grid.Column="0"
             Grid.ColumnSpan="2"
             Orientation="Horizontal"

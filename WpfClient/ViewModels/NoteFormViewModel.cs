@@ -4,7 +4,7 @@ using WpfClient.Services.DataProvider;
 
 namespace WpfClient.ViewModels;
 
-public sealed class NoteFormViewModel : ViewModel
+public sealed class NoteFormViewModel(IDataProvider dataProvider, INavigationService navigationService) : ViewModel
 {
 	public Note Note
 	{
@@ -23,15 +23,6 @@ public sealed class NoteFormViewModel : ViewModel
 
 	private Note _note = new Note();
 
-	private readonly IDataProvider _dataProvider;
-	private readonly INavigationService _navigationService;
-
-	public NoteFormViewModel(IDataProvider dataProvider, INavigationService navigationService)
-	{
-		_dataProvider = dataProvider;
-		_navigationService = navigationService;
-	}
-
 	protected override void OnBeforeShown()
 	{
 		if (EditMode)
@@ -46,19 +37,19 @@ public sealed class NoteFormViewModel : ViewModel
 	{
 		if (EditMode)
 		{
-			await _dataProvider.EditNote(Note);
+			await dataProvider.EditNote(Note);
 		}
 		else
 		{
-			await _dataProvider.AddNote(Note);
+			await dataProvider.AddNote(Note);
 		}
 		
-		_navigationService.NavigateTo<NotesViewModel>();
+		navigationService.NavigateTo<NotesViewModel>();
 	}
 	
 	private void Back()
 	{
 		Note = new Note();
-		_navigationService.NavigateTo<NotesViewModel>();
+		navigationService.NavigateTo<NotesViewModel>();
 	}
 }

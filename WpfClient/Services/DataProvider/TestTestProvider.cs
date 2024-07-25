@@ -1,5 +1,6 @@
 using Application.Models;
 using Database.Data;
+using WebAPI.Models;
 
 namespace WpfClient.Services.DataProvider;
 
@@ -42,21 +43,21 @@ public sealed class TestTestProvider : IDataProvider
 		return [DefaultValues.Admin, DefaultValues.User];
 	}
 
-	public Task AddUser(User user)
+	public Task AddUser(UserDto user)
 	{
 		Console.WriteLine($"Add: {UserToString(user)}");
 
 		return Task.CompletedTask;
 	}
 
-	public Task EditUser(User user)
+	public Task EditUser(UserDto user)
 	{
 		Console.WriteLine($"Edit: {UserToString(user)}");
 		
 		return Task.CompletedTask;
 	}
 
-	public Task DeleteUser(User user)
+	public Task DeleteUser(UserDto user)
 	{
 		Console.WriteLine($"Delete: {UserToString(user)}");
 		
@@ -68,8 +69,15 @@ public sealed class TestTestProvider : IDataProvider
 		return $"[id: {note.Id}, FirstName: {note.FirstName}, SecondName: {note.SecondName}, ThirdName: {note.ThirdName}, PhoneNumber: {note.PhoneNumber}, Address: {note.Address}, Description: {note.Description}]";
 	}
 	
-	private static string UserToString(User user)
+	private static string UserToString(UserDto user)
 	{
-		return $"[id: {user.Id}, UserName: {user.UserName}, Email: {user.Email}, PhoneNumber: {user.PhoneNumber}, Role: {user.Role.Name}]";
+		return $"[id: {user.Id}, UserName: {user.UserName}, Email: {user.Email}, PhoneNumber: {user.PhoneNumber}, Role: {user.RoleId}]";
+	}
+	
+	public async Task<List<Role>> GetAllRoles()
+	{
+		await Task.Delay(100);
+		
+		return [DefaultValues.AdminRole, DefaultValues.UserRole];
 	}
 }
